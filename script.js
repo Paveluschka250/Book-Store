@@ -197,11 +197,36 @@ function render() {
   let mainref = document.getElementById("content");
   mainref.innerHTML = "";
   for (let i = 0; i < books.length; i++) {
-    mainref.innerHTML += /*html*/ `
-            <h1>Title: ${books[i].name}</h1>
-            <h2>Author: ${books[i].author}</h2>
-            <h3>likes: ${books[i].likes}</h3>
-        `;
+    let book = books[i];
+    let initialLikes = book.liked ? book.likes + 1 : book.likes;
+    let likeStatus = book.liked ? "like-true.svg" : "like-false.svg";
+    
+
+    mainref.innerHTML +=/*html*/`
+          <h1>Title: ${book.name}</h1>
+          <h2>Author: ${book.author}</h2>
+          <h3 id="likes-${i}">Likes: ${initialLikes}</h3>
+          <img src="img/icons/${likeStatus}" id="like-img-${i}" onclick="toggleLike(${i})">
+          <h3> Price: ${book.price} $</h3>
+          <h3> Publishedyear; ${book.publishedYear}</h3>
+          <h3> genre: ${book.genre}</h3>
+          
+
+      `;
   }
 }
 
+function toggleLike(index) {
+  let book = books[index];
+  let likeImg = document.getElementById(`like-img-${index}`);
+  let likesText = document.getElementById(`likes-${index}`);
+
+  book.liked = !book.liked;
+  if (book.liked) {
+    likeImg.src = "img/icons/like-true.svg";
+    likesText.innerText = `Likes: ${book.likes + 1}`;
+  } else {
+    likeImg.src = "img/icons/like-false.svg";
+    likesText.innerText = `Likes: ${book.likes}`;
+  }
+}
