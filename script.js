@@ -215,13 +215,19 @@ function render() {
       mainref.innerHTML += `<h3>Kommentare</h3>`;
       for (let j = 0; j < book.comments.length; j++) {
         let comment = book.comments[j];
-        mainref.innerHTML += `<p> <b>${comment.name}</b> :${comment.comment}</p>`;
+        mainref.innerHTML += `<p><b>${comment.name}</b>: ${comment.comment}</p>`;
       }
     } else {
       mainref.innerHTML += `<h3>No comments yet</h3>`;
     }
+
+    mainref.innerHTML += /*html*/`
+      <input type="text" id="comment-input-${i}" placeholder="Kommentieren..."> 
+      <button onclick="postComment(${i})">Posten</button>
+    `;
   }
 }
+
 function toggleLike(index) {
   let book = books[index];
   let likeImg = document.getElementById(`like-img-${index}`);
@@ -236,3 +242,14 @@ function toggleLike(index) {
     likesText.innerText = `Likes: ${book.likes}`;
   }
 }
+
+function postComment(index) {
+  let commentInput = document.getElementById(`comment-input-${index}`);
+  let commentText = commentInput.value;
+
+  if (commentText) {
+    books[index].comments.push({ name: "User", comment: commentText });
+    render(); // Re-render to update the comments
+  }
+}
+
