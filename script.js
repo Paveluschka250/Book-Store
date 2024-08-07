@@ -193,7 +193,7 @@ let books = [
   },
 ];
 
-let currentUser = "Anonymous"; // The name of the current user
+let currentUser = "MyProfilName";
 
 function render() {
   let mainref = document.getElementById("content");
@@ -204,32 +204,35 @@ function render() {
     let likeStatus = book.liked ? "like-true.svg" : "like-false.svg";
 
     mainref.innerHTML += /*html*/ `
-      <h1>Title: ${book.name}</h1>
-      <h2>Author: ${book.author}</h2>
-      <h3 id="likes-${i}">Likes: ${initialLikes}</h3>
-      <img src="img/icons/${likeStatus}" id="like-img-${i}" onclick="toggleLike(${i})">
-      <h3> Price: ${book.price} $</h3>
-      <h3> Published year: ${book.publishedYear}</h3>
-      <h3> Genre: ${book.genre}</h3>
-    `;     
+      <div class="book">
+        <h1>Title: ${book.name}</h1>
+        <h2>Author: ${book.author}</h2>
+        <h3 id="likes-${i}">Likes: ${initialLikes}</h3>
+        <img src="img/icons/${likeStatus}" id="like-img-${i}" onclick="toggleLike(${i})">
+        <h3> Price: ${book.price} $</h3>
+        <h3> Published year: ${book.publishedYear}</h3>
+        <h3> Genre: ${book.genre}</h3>
+    `;
 
     if (book.comments.length > 0) {
-      mainref.innerHTML += `<h3>Kommentare</h3>`;
+      mainref.innerHTML += `<div class="comment-section"><h3>Kommentare</h3>`;
       for (let j = 0; j < book.comments.length; j++) {
         let comment = book.comments[j];
-        mainref.innerHTML += `<p><b>${comment.name}</b>: ${comment.comment}`;
+        mainref.innerHTML += `<p class="comment"><b>${comment.name}</b>: ${comment.comment}`;
         if (comment.name === currentUser) {
-          mainref.innerHTML += ` <button onclick="deleteComment(${i}, ${j})">Löschen</button>`;
+          mainref.innerHTML += ` <button class="deletebutton" onclick="deleteComment(${i}, ${j})">Löschen</button>`;
         }
         mainref.innerHTML += `</p>`;
       }
+      mainref.innerHTML += `</div>`;
     } else {
-      mainref.innerHTML += `<h3>No comments yet</h3>`;
+      mainref.innerHTML += `<h3 class="no-comments">No comments yet</h3>`;
     }
 
-    mainref.innerHTML += /*html*/`
+    mainref.innerHTML += /*html*/ `
       <input type="text" id="comment-input-${i}" placeholder="Kommentieren..."> 
       <button onclick="postComment(${i})">Posten</button>
+      </div>
     `;
   }
 }
@@ -247,6 +250,7 @@ function toggleLike(index) {
     likeImg.src = "img/icons/like-false.svg";
     likesText.innerText = `Likes: ${book.likes}`;
   }
+  saveBooksToLocalStorage();
 }
 
 function postComment(index) {
@@ -255,13 +259,28 @@ function postComment(index) {
 
   if (commentText) {
     books[index].comments.push({ name: currentUser, comment: commentText });
-    render(); // 
+    render();
+    saveBooksToLocalStorage();
   }
 }
 
 function deleteComment(bookIndex, commentIndex) {
   if (books[bookIndex].comments[commentIndex].name === currentUser) {
     books[bookIndex].comments.splice(commentIndex, 1);
-    render(); 
+    render();
+    saveBooksToLocalStorage();
   }
 }
+function saveBooksToLocalStorage() {
+  localStorage.setItem("books", JSON.stringify(books));
+}
+
+function loadBooksFromLocalStorage() {
+  const storedBooks = localStorage.getItem("books");
+  if (storedBooks) {
+    books = JSON.parse(storedBooks);
+  }
+}
+
+loadBooksFromLocalStorage();
+render();
