@@ -193,6 +193,8 @@ let books = [
   },
 ];
 
+let currentUser = "Anonymous"; // The name of the current user
+
 function render() {
   let mainref = document.getElementById("content");
   mainref.innerHTML = "";
@@ -215,7 +217,11 @@ function render() {
       mainref.innerHTML += `<h3>Kommentare</h3>`;
       for (let j = 0; j < book.comments.length; j++) {
         let comment = book.comments[j];
-        mainref.innerHTML += `<p><b>${comment.name}</b>: ${comment.comment}</p>`;
+        mainref.innerHTML += `<p><b>${comment.name}</b>: ${comment.comment}`;
+        if (comment.name === currentUser) {
+          mainref.innerHTML += ` <button onclick="deleteComment(${i}, ${j})">Löschen</button>`;
+        }
+        mainref.innerHTML += `</p>`;
       }
     } else {
       mainref.innerHTML += `<h3>No comments yet</h3>`;
@@ -248,8 +254,14 @@ function postComment(index) {
   let commentText = commentInput.value;
 
   if (commentText) {
-    books[index].comments.push({ name: "User", comment: commentText });
-    render(); // Re-render to update the comments
+    books[index].comments.push({ name: currentUser, comment: commentText });
+    render(); // 
   }
 }
 
+function deleteComment(bookIndex, commentIndex) {
+  if (books[bookIndex].comments[commentIndex].name === currentUser) {
+    books[bookIndex].comments.splice(commentIndex, 1);
+    render(); 
+  }
+}
